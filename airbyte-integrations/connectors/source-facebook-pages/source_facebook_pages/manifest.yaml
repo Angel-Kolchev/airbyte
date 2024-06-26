@@ -154,7 +154,6 @@ definitions:
               'sharedposts',
               'sponsor_tags',
               'to'
-              'insights.metric(post_impressions_unique)'
               ])
             }}
 
@@ -219,6 +218,9 @@ definitions:
               'post_reactions_by_type_total'
               ])
             }}
+
+          since: "2024-05-28"
+          until: "2024-06-25"
 streams:
   - "#/definitions/page_stream"
   - "#/definitions/post_stream"
