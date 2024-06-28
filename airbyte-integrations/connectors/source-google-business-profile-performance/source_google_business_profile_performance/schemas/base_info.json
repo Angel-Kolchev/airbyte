@@ -1,0 +1,130 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FetchMultiDailyMetricsTimeSeriesResponse",
+  "type": "object",
+  "properties": {
+    "multiDailyMetricTimeSeries": {
+      "description": "DailyMetrics and their corresponding time series.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/MultiDailyMetricTimeSeries"
+      }
+    }
+  },
+  "definitions": {
+    "MultiDailyMetricTimeSeries": {
+      "description": "Represents a list of tuples of DailyMetric-DailySubEntityType-TimeSeries.",
+      "type": "object",
+      "properties": {
+        "dailyMetricTimeSeries": {
+          "description": "List of DailyMetric-TimeSeries pairs.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DailyMetricTimeSeries"
+          }
+        }
+      }
+    },
+    "DailyMetricTimeSeries": {
+      "description": "Represents a single datapoint, where each datapoint is a DailyMetric-DailySubEntityType-TimeSeries tuple.",
+      "type": "object",
+      "properties": {
+        "dailyMetric": {
+          "description": "The DailyMetric that the TimeSeries represents.",
+          "type": "string",
+          "enum": [
+            "DAILY_METRIC_UNKNOWN",
+            "BUSINESS_IMPRESSIONS_DESKTOP_MAPS",
+            "BUSINESS_IMPRESSIONS_DESKTOP_SEARCH",
+            "BUSINESS_IMPRESSIONS_MOBILE_MAPS",
+            "BUSINESS_IMPRESSIONS_MOBILE_SEARCH",
+            "BUSINESS_CONVERSATIONS",
+            "BUSINESS_DIRECTION_REQUESTS",
+            "CALL_CLICKS",
+            "WEBSITE_CLICKS",
+            "BUSINESS_BOOKINGS",
+            "BUSINESS_FOOD_ORDERS",
+            "BUSINESS_FOOD_MENU_CLICKS"
+          ]
+        },
+        "dailySubEntityType": {
+          "description": "The DailySubEntityType that the TimeSeries represents. Will not be present when breakdown does not exist.",
+          "$ref": "#/definitions/DailySubEntityType"
+        },
+        "timeSeries": {
+          "description": "List of datapoints where each datapoint is a date-value pair.",
+          "$ref": "#/definitions/TimeSeries"
+        }
+      }
+    },
+    "DailySubEntityType": {
+      "description": "Represents all possible subentity types that are associated with DailyMetrics.",
+      "type": "object",
+      "properties": {
+        "dayOfWeek": {
+          "description": "Represents the day of the week. Eg: MONDAY. Currently supported DailyMetrics = NONE.",
+          "type": "string",
+          "enum": [
+            "DAY_OF_WEEK_UNSPECIFIED",
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY",
+            "THURSDAY",
+            "FRIDAY",
+            "SATURDAY",
+            "SUNDAY"
+          ]
+        }
+      }
+    },
+    "TimeSeries": {
+      "description": "Represents a timeseries.",
+      "type": "object",
+      "properties": {
+        "datedValues": {
+          "description": "List of datapoints in the timeseries, where each datapoint is a date-value pair.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DatedValue"
+          }
+        }
+      }
+    },
+    "DatedValue": {
+      "description": "Represents a single datapoint in the timeseries, where each datapoint is a date-value pair.",
+      "type": "object",
+      "properties": {
+        "date": {
+          "description": "The date that the datapoint corresponds to. This represents a month value if the day field is not set.",
+          "$ref": "#/definitions/Date"
+        },
+        "value": {
+          "description": "The value of the datapoint. This will not be present when the value is zero.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "Date": {
+      "description": "Represents a whole or partial calendar date, such as a birthday. The time of day and time zone are either specified elsewhere or are insignificant. The date is relative to the Gregorian Calendar. This can represent one of the following: * A full date, with non-zero year, month, and day values. * A month and day, with a zero year (for example, an anniversary). * A year on its own, with a zero month and a zero day. * A year and month, with a zero day (for example, a credit card expiration date).",
+      "type": "object",
+      "properties": {
+        "year": {
+          "description": "Year of the date. Must be from 1 to 9999, or 0 to specify a date without a year.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "month": {
+          "description": "Month of a year. Must be from 1 to 12, or 0 to specify a year without a month and day.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "day": {
+          "description": "Day of a month. Must be from 1 to 31 and valid for the year and month, or 0 to specify a year by itself or a year and month where the day isn't significant.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    }
+  }
+}
