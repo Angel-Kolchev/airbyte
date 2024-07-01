@@ -144,7 +144,7 @@ class UserLifetimeInsights(DatetimeTransformerMixin, InstagramStream):
     """Docs: https://developers.facebook.com/docs/instagram-api/reference/ig-user/insights"""
 
     primary_key = ["business_account_id", "breakdown"]
-    BREAKDOWNS = ["city", "country", "age,gender"]
+    BREAKDOWNS = ["city", "country", "age", "gender"]
     BASE_METRIC = ["follower_demographics"]
     period = "lifetime"
 
