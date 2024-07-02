@@ -217,12 +217,13 @@ definitions:
               'post_reactions_like_total',
               'post_reactions_by_type_total',
               'page_impressions_by_age_gender_unique',
-              'page_impressions_by_city_unique'
+              'page_impressions_by_city_unique',
+              'page_views_total'
               ])
             }}
 
-          since: "2024-05-28"
-          until: "2024-06-25"
+          since: "2024-06-01"
+          until: "2024-07-01"
 streams:
   - "#/definitions/page_stream"
   - "#/definitions/post_stream"
