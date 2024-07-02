@@ -5,7 +5,7 @@ definitions:
     type: RecordSelector
     extractor:
       type: DpathExtractor
-      field_path: []
+      field_path: ["multiDailyMetricTimeSeries", "*"]
   requester:
     type: HttpRequester
     url_base: "https://businessprofileperformance.googleapis.com/v1"
@@ -16,8 +16,6 @@ definitions:
       client_id: "{{ config.client_id }}"
       client_secret: "{{ config.client_secret }}"
       refresh_token: "{{ config.refresh_token }}"
-    # request_headers:
-    #   X-AP-Context: orgId={{ config.org_id }}
     error_handler:
       response_filters:
         - http_codes: [500, 429]
@@ -30,28 +28,14 @@ definitions:
   base_stream:
     selector:
       extractor:
-        # field_path: ["data"]
-        field_path: []
+        field_path: ["multiDailyMetricTimeSeries", "*"]
     retriever:
       $ref: "#/definitions/retriever"
       record_selector:
         $ref: "#/definitions/base_stream/selector"
-    # transformations:
-    #   - type: AddFields
-    #     fields:
-    #       start_date_str:
-    #         value: >-
-    #           {% import 'macros.jinja' as macros %}
-    #           {{ macros.complex_date_to_string(config.get('start_date')) }}
-    #   - type: AddFields
-    #     fields:
-    #       end_date_str:
-    #         value: >-
-    #           {% import 'macros.jinja' as macros %}
-    #           {{ macros.complex_date_to_string(config.get('end_date')) }}
     incremental_sync:
       type: DatetimeBasedCursor
-      cursor_field: date
+      cursor_field: incremental_start_date
       start_datetime:
         datetime: "{{ config['start_date'] }}"
         datetime_format: "%Y-%m-%d"
@@ -61,63 +45,35 @@ definitions:
       step: "P1D"
       datetime_format: "%Y-%m-%d"
       cursor_granularity: "P1D"
-      # start_datetime:
-      #   type: MinMaxDatetime
-      #   datetime: >-
-      #     {{ format_datetime(config.get('start_date'), "%Y-%m-%d") }}
-      #   datetime_format: "%Y-%m-%d"
-      # end_datetime:
-      #   type: MinMaxDatetime
-      #   datetime: >-
-      #     {{ format_datetime(end_date_str if config.get('end_date') else
-      #     now_utc(), "%Y-%m-%d") }}
-      #   datetime_format: "%Y-%m-%d"
-      # start_time_option:
-      #   type: RequestOption
-      #   field_name: start_time
-      #   inject_into: request_parameter
-      # end_time_option:
-      #   type: RequestOption
-      #   field_name: end_time
-      #   inject_into: request_parameter
-      # step: "P{{ config.get('time_window', 7) }}D"
-      # cursor_granularity: PT1S
-
-      # paginator:
-      #   type: DefaultPaginator
-      #   pagination_strategy:
-      #     type: OffsetIncrement
-      #     page_size: 100
-      #   page_size_option:
-      #     inject_into: request_parameter
-      #     field_name: limit
-      #   page_token_option:
-      #     type: RequestOption
-      #     field_name: offset
-      #     inject_into: request_parameter
-
-  customers_stream:
-    $ref: "#/definitions/base_stream"
-    name: "customers"
-    primary_key: "id"
-    $parameters:
-      path: "/example"
-
-  base_info_stream:
+    transformations:
+      - type: AddFields
+        fields:
+          - type: AddedFieldDefinition
+            path: ["incremental_start_date"]
+            value: "{{ stream_slice.start_time }}"
+          - type: AddedFieldDefinition
+            path: ["id"]
+            # value: "{{record.*.dailyMetric}}-{{ stream_slice.start_time }}"
+            value: |
+              {% set ids = [] %}
+              {%- for data in (record.get('dailyMetricTimeSeries') or [])|sort(attribute="dailyMetric") -%}
+              {% set ids = ids.append(data.get('dailyMetric')) %}
+              {%- endfor -%}
+              {{ ids|join("-") }}/{{ stream_slice.start_time }}
+  business_performance_stream:
     $ref: "#/definitions/base_stream"
     $parameters:
-      name: "base_info"
-      primary_key: "date"
+      name: "business_performance"
+      primary_key: id
       path: "{{ config.location_id }}:fetchMultiDailyMetricsTimeSeries?dailyMetrics=WEBSITE_CLICKS&dailyMetrics=CALL_CLICKS&dailyMetrics=BUSINESS_BOOKINGS&dailyRange.start_date.year={{ stream_slice['start_time'].split('-')[0] }}&dailyRange.start_date.month={{ stream_slice['start_time'].split('-')[1] }}&dailyRange.start_date.day={{ stream_slice['start_time'].split('-')[2] }}&dailyRange.end_date.year={{ stream_slice['end_time'].split('-')[0] }}&dailyRange.end_date.month={{ stream_slice['end_time'].split('-')[1] }}&dailyRange.end_date.day={{ stream_slice['end_time'].split('-')[2] }}"
-    base_incremental_stream: "date" 
 
 streams:
-  - "#/definitions/base_info_stream"
+  - "#/definitions/business_performance_stream"
 
 check:
   type: CheckStream
   stream_names:
-    - "base_info"
+    - "business_performance"
 
 spec:
   type: Spec
@@ -141,7 +97,6 @@ spec:
       client_id:
         type: string
         description: Client id
-        airbyte_secret: true
       client_secret:
         type: string
         description: Client secret
@@ -151,9 +106,7 @@ spec:
         description: Location id to sync data for
       start_date:
         title: Start Date
-        description:
-          The Start date for collecting reports, should not be more than
-          60 days in the past. In YYYY-MM-DD format
+        description: The Start date for collecting reports. In YYYY-MM-DD format
         pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
         format: date
         examples:
