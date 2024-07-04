@@ -27,7 +27,7 @@ definitions:
     type: DefaultPaginator
     pagination_strategy:
       type: "CursorPagination"
-      cursor_value: "{{ response.paging.get('cursors', {}).get('after') }}"
+      cursor_value: "{{ response.get('paging', {}).get('cursors', {}).get('after') }}"
       stop_condition: "{{ response.paging == '' or not response.paging.get('next') }}"
       page_size: 100
     page_size_option:
@@ -61,6 +61,8 @@ definitions:
       path: "/{{ config['page_id'] }}"
     retriever:
       $ref: "#/definitions/retriever"
+      paginator:
+        $ref: "#/definitions/facebook_post_paginator"
       record_selector:
         extractor:
           field_path: []
@@ -195,6 +197,12 @@ definitions:
       path: "/{{ config['page_id'] }}/insights"
     retriever:
       $ref: "#/definitions/retriever"
+      paginator:
+        $ref: "#/definitions/facebook_post_paginator"
+      record_selector:
+        type: RecordSelector
+        extractor:
+          field_path: ["data", "*", "insights", "data", "*"]
       requester:
         $ref: "#/definitions/requester"
         request_parameters:
@@ -221,9 +229,6 @@ definitions:
               'page_views_total'
               ])
             }}
-
-          since: "2024-06-01"
-          until: "2024-07-01"
 streams:
   - "#/definitions/page_stream"
   - "#/definitions/post_stream"
