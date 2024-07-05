@@ -65,7 +65,7 @@ definitions:
     $parameters:
       name: "business_performance"
       primary_key: id
-      path: "{{ config.location_id }}:fetchMultiDailyMetricsTimeSeries?dailyMetrics=WEBSITE_CLICKS&dailyMetrics=CALL_CLICKS&dailyMetrics=BUSINESS_BOOKINGS&dailyRange.start_date.year={{ stream_slice['start_time'].split('-')[0] }}&dailyRange.start_date.month={{ stream_slice['start_time'].split('-')[1] }}&dailyRange.start_date.day={{ stream_slice['start_time'].split('-')[2] }}&dailyRange.end_date.year={{ stream_slice['end_time'].split('-')[0] }}&dailyRange.end_date.month={{ stream_slice['end_time'].split('-')[1] }}&dailyRange.end_date.day={{ stream_slice['end_time'].split('-')[2] }}"
+      path: "{{ config.location_id }}:fetchMultiDailyMetricsTimeSeries?dailyMetrics=WEBSITE_CLICKS&dailyMetrics=CALL_CLICKS&dailyMetrics=BUSINESS_BOOKINGS&dailyMetrics=BUSINESS_IMPRESSIONS_DESKTOP_MAPS&dailyMetrics=BUSINESS_IMPRESSIONS_DESKTOP_SEARCH&dailyMetrics=BUSINESS_IMPRESSIONS_MOBILE_MAPS&dailyMetrics=BUSINESS_IMPRESSIONS_MOBILE_SEARCH&dailyMetrics=BUSINESS_CONVERSATIONS&dailyMetrics=BUSINESS_DIRECTION_REQUESTS&dailyMetrics=BUSINESS_FOOD_ORDERS&dailyMetrics=BUSINESS_FOOD_MENU_CLICKS&dailyRange.start_date.year={{ stream_slice['start_time'].split('-')[0] }}&dailyRange.start_date.month={{ stream_slice['start_time'].split('-')[1] }}&dailyRange.start_date.day={{ stream_slice['start_time'].split('-')[2] }}&dailyRange.end_date.year={{ stream_slice['end_time'].split('-')[0] }}&dailyRange.end_date.month={{ stream_slice['end_time'].split('-')[1] }}&dailyRange.end_date.day={{ stream_slice['end_time'].split('-')[2] }}"
 
 streams:
   - "#/definitions/business_performance_stream"
