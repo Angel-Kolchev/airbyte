@@ -1,0 +1,45 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "searchKeywordsCounts": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "searchKeyword": {
+                        "type": "string",
+                        "description": "The lower-cased string that the user entered."
+                    },
+                    "insightsValue": {
+                        "type": "object",
+                        "properties": {
+                            "value": {
+                                "type": "integer",
+                                "description": "The sum of the number of unique users that used the keyword in a month."
+                            },
+                            "threshold": {
+                                "type": "integer",
+                                "description": "A threshold that indicates that the actual value is below this threshold."
+                            }
+                        },
+                        "required": [
+                            "value"
+                        ]
+                    }
+                },
+                "required": [
+                    "searchKeyword",
+                    "insightsValue"
+                ]
+            }
+        },
+        "nextPageToken": {
+            "type": "string",
+            "description": "A token indicating the last paginated result returned. This can be used by succeeding requests to get the next 'page' of keywords. It will only be present when there are more results to be returned."
+        }
+    },
+    "required": [
+        "searchKeywordsCounts"
+    ]
+}

@@ -25,14 +25,14 @@ definitions:
   retriever:
     requester:
       $ref: "#/definitions/requester"
-  base_stream:
+  business_performance_base_stream:
     selector:
       extractor:
         field_path: ["multiDailyMetricTimeSeries", "*"]
     retriever:
       $ref: "#/definitions/retriever"
       record_selector:
-        $ref: "#/definitions/base_stream/selector"
+        $ref: "#/definitions/business_performance_base_stream/selector"
     incremental_sync:
       type: DatetimeBasedCursor
       cursor_field: incremental_start_date
@@ -60,20 +60,54 @@ definitions:
               {% set ids = ids.append(data.get('dailyMetric')) %}
               {%- endfor -%}
               {{ ids|join("-") }}/{{ stream_slice.start_time }}
+  search_keywords_stream_base_stream:
+    selector:
+      extractor:
+        field_path: []
+    retriever:
+      $ref: "#/definitions/retriever"
+      record_selector:
+        $ref: "#/definitions/search_keywords_stream_base_stream/selector"
+    incremental_sync:
+      type: DatetimeBasedCursor
+      cursor_field: incremental_start_date
+      start_datetime:
+        datetime: "{{ config['start_date'] }}"
+        datetime_format: "%Y-%m-%d"
+      end_datetime:
+        datetime: "{{ now_utc().strftime('%Y-%m-%d') }}"
+        datetime_format: "%Y-%m-%d"
+      step: "P1M"
+      datetime_format: "%Y-%m-%d"
+      cursor_granularity: "P1M"
+    transformations:
+      - type: AddFields
+        fields:
+          - type: AddedFieldDefinition
+            path: ["incremental_start_date"]
+            value: "{{ stream_slice.start_time }}"
   business_performance_stream:
-    $ref: "#/definitions/base_stream"
+    $ref: "#/definitions/business_performance_base_stream"
     $parameters:
       name: "business_performance"
       primary_key: id
       path: "{{ config.location_id }}:fetchMultiDailyMetricsTimeSeries?dailyMetrics=WEBSITE_CLICKS&dailyMetrics=CALL_CLICKS&dailyMetrics=BUSINESS_BOOKINGS&dailyMetrics=BUSINESS_IMPRESSIONS_DESKTOP_MAPS&dailyMetrics=BUSINESS_IMPRESSIONS_DESKTOP_SEARCH&dailyMetrics=BUSINESS_IMPRESSIONS_MOBILE_MAPS&dailyMetrics=BUSINESS_IMPRESSIONS_MOBILE_SEARCH&dailyMetrics=BUSINESS_CONVERSATIONS&dailyMetrics=BUSINESS_DIRECTION_REQUESTS&dailyMetrics=BUSINESS_FOOD_ORDERS&dailyMetrics=BUSINESS_FOOD_MENU_CLICKS&dailyRange.start_date.year={{ stream_slice['start_time'].split('-')[0] }}&dailyRange.start_date.month={{ stream_slice['start_time'].split('-')[1] }}&dailyRange.start_date.day={{ stream_slice['start_time'].split('-')[2] }}&dailyRange.end_date.year={{ stream_slice['end_time'].split('-')[0] }}&dailyRange.end_date.month={{ stream_slice['end_time'].split('-')[1] }}&dailyRange.end_date.day={{ stream_slice['end_time'].split('-')[2] }}"
 
+  search_keywords_stream:
+    $ref: "#/definitions/search_keywords_stream_base_stream"
+    $parameters:
+      name: "search_keywords"
+      primary_key: incremental_start_date
+      path: "{{ config.location_id }}/searchkeywords/impressions/monthly?monthlyRange.start_month.year={{ stream_slice['start_time'].split('-')[0] }}&monthlyRange.start_month.month={{ stream_slice['start_time'].split('-')[1] }}&monthlyRange.end_month.year={{ stream_slice['end_time'].split('-')[0] }}&monthlyRange.end_month.month={{ stream_slice['end_time'].split('-')[1] }}"
+
 streams:
   - "#/definitions/business_performance_stream"
+  - "#/definitions/search_keywords_stream"
 
 check:
   type: CheckStream
   stream_names:
-    - "business_performance"
+    - "search_keywords"
 
 spec:
   type: Spec
