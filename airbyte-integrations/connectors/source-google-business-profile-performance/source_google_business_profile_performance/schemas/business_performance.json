@@ -22,7 +22,7 @@
       ]
     },
     "id": {
-      "description": "The id of a record. In dailyMetric-incremental_start_date format",
+      "description": "The id of a record. In {location_id/start_date/metrics} format",
       "type": "string"
     }
   },

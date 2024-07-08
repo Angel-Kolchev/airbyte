@@ -48,6 +48,10 @@
         "nextPageToken": {
             "type": "string",
             "description": "A token indicating the last paginated result returned. This can be used by succeeding requests to get the next 'page' of keywords. It will only be present when there are more results to be returned."
+        },
+        "id": {
+          "description": "The id of a record. In {location_id/start_date} format",
+          "type": "string"
         }
     },
     "required": [

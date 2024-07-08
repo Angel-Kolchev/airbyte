@@ -59,7 +59,7 @@ definitions:
               {%- for data in (record.get('dailyMetricTimeSeries') or [])|sort(attribute="dailyMetric") -%}
               {% set ids = ids.append(data.get('dailyMetric')) %}
               {%- endfor -%}
-              {{ ids|join("-") }}/{{ stream_slice.start_time }}
+              {{ config.location_id }}/{{ stream_slice.start_time }}/{{ ids|join("-") }}
   search_keywords_stream_base_stream:
     selector:
       extractor:
@@ -86,6 +86,11 @@ definitions:
           - type: AddedFieldDefinition
             path: ["incremental_start_date"]
             value: "{{ stream_slice.start_time }}"
+      - type: AddFields
+        fields:
+          - type: AddedFieldDefinition
+            path: ["id"]
+            value: "{{ config.location_id }}/{{ stream_slice.start_time }}"
   business_performance_stream:
     $ref: "#/definitions/business_performance_base_stream"
     $parameters:
