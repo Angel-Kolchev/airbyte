@@ -2,10 +2,6 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "properties": {
-      "reviews": {
-        "type": "array",
-        "items": {
-          "type": "object",
           "properties": {
             "name": {
               "type": "string",
@@ -69,8 +65,8 @@
             }
           },
           "required": ["name", "reviewId", "reviewer", "starRating", "createTime", "updateTime"]
-        }
-      },
+        
+      ,
       "averageRating": {
         "type": "number",
         "description": "The average star rating of all reviews for this location on a scale of 1 to 5, where 5 is the highest rating."
