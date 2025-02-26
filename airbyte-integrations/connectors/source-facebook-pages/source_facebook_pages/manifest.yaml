@@ -215,7 +215,6 @@ definitions:
               'page_daily_follows_unique',
               'post_reactions_like_total',
               'post_reactions_by_type_total',
-              'page_impressions_by_city_unique',
               'page_views_total'
               ])
             }}
