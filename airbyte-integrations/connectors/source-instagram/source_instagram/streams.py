@@ -373,8 +373,8 @@ class Media(DatetimeTransformerMixin, InstagramStream):
 class MediaInsights(Media):
     """Docs: https://developers.facebook.com/docs/instagram-api/reference/ig-media/insights"""
 
-    MEDIA_METRICS = ["impressions", "reach", "saved", "video_views", "likes", "comments", "shares"]
-    CAROUSEL_ALBUM_METRICS = ["impressions", "reach", "saved", "video_views"]
+    MEDIA_METRICS = ["impressions", "reach", "saved", "likes", "comments", "shares"]
+    CAROUSEL_ALBUM_METRICS = ["impressions", "reach", "saved"]
 
     REELS_METRICS = [
         "comments",
@@ -413,9 +413,9 @@ class MediaInsights(Media):
         if item.get("media_product_type") == "REELS":
             metrics = self.REELS_METRICS
         elif item.get("media_type") == "VIDEO" and item.get("media_product_type") == "FEED":
-            metrics = ["impressions", "reach", "saved", "video_views", "video_views"]
+            metrics = ["impressions", "reach", "saved"]
         elif item.get("media_type") == "VIDEO":
-            metrics = self.MEDIA_METRICS + ["video_views"]
+            metrics = self.MEDIA_METRICS
         elif item.get("media_type") == "CAROUSEL_ALBUM":
             metrics = self.CAROUSEL_ALBUM_METRICS
 
