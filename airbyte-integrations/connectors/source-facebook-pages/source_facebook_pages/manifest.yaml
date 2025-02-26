@@ -213,14 +213,11 @@ definitions:
               'page_impressions_unique',
               'page_posts_impressions',
               'page_post_engagements',
-              'page_fans_online',
-              'page_fans_online_per_day',
               'post_impressions',
               'post_impressions_unique',
               'page_daily_follows_unique',
               'post_reactions_like_total',
               'post_reactions_by_type_total',
-              'page_impressions_by_age_gender_unique',
               'page_impressions_by_city_unique',
               'page_views_total'
               ])
