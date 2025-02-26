@@ -180,10 +180,7 @@ definitions:
             {{ 
               'insights.metric(%s)' % ','.join([
               'post_impressions_unique',
-              'post_engaged_users',
               'post_clicks',
-              'post_clicks_unique',
-              'post_clicks_by_type_unique',
               'post_reactions_by_type_total',
               'post_reactions_like_total'
               ])
